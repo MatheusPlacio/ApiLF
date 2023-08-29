@@ -43,11 +43,6 @@ namespace Domain.Models
 
         //===========================================================================================================================//
 
-        [StringLength(14, ErrorMessage = "O campo {0} precisa ter no mínimo 10 dígitos", MinimumLength = 10)]
-        public string? TelefoneFixo { get; set; }
-
-        //===========================================================================================================================//
-
         [StringLength(70, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
         public string Email { get; set; }
 

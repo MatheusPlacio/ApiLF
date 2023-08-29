@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Domain.Interfaces.IService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiLF.Controllers
@@ -7,6 +8,11 @@ namespace ApiLF.Controllers
     [ApiController]
     public class PacientesController : ControllerBase
     {
+        private readonly IPacienteService _pacienteService;
 
+        public PacientesController(IPacienteService pacienteService)
+        {
+            _pacienteService = pacienteService;
+        }
     }
 }

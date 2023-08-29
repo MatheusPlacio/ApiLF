@@ -29,6 +29,6 @@ namespace Domain.Models
         //===========================================================================================================================//
 
         //EF
-        public List<Agendamento> Agendamentos { get; set; }
+        public List<Agendamento> Agendamento { get; set; }
     }
 }
