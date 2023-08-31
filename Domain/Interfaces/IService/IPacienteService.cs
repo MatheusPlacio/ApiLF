@@ -10,5 +10,6 @@ namespace Domain.Interfaces.IService
         void CriarPaciente(Paciente paciente);
         bool AtualizarPaciente(PacienteUpdateDTO pacienteDTO);
         bool DeletarPaciente(int pacienteId);
+        IList<PacienteEnderecoDTO> GetTodosPacientesEnderecos();
     }
 }

@@ -3,6 +3,7 @@ using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IService;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Service.Services;
 
 namespace ApiLF.Controllers
 {
@@ -39,6 +40,13 @@ namespace ApiLF.Controllers
                 return NotFound();
             }
             return Ok(paciente);
+        }
+
+        [HttpGet("PacientesEnderecos")]
+        public IActionResult ObterTodosPacientesEnderecos()
+        {
+            var enderecos = _pacienteService.GetTodosPacientesEnderecos();
+            return Ok(enderecos);
         }
 
         [HttpPost]

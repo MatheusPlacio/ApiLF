@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.DTOs.EnderecoDTO;
 using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
@@ -38,7 +39,7 @@ namespace Service.Services
 
         public PacienteDTO? ObterPacientePorId(int id)
         {
-            var resultado =  _pacienteRepository.GetById(id);
+            var resultado = _pacienteRepository.GetById(id);
 
             if (resultado == null)
                 throw new Exception("Paciente não encontrado");
@@ -76,12 +77,12 @@ namespace Service.Services
             catch (Exception ex)
             {
                 throw new Exception($"{ex}");
-            }           
+            }
         }
 
         public bool AtualizarPaciente(PacienteUpdateDTO pacienteDTO)
         {
-            var existingPaciente =  _pacienteRepository.Buscar(c => (c.CPF == pacienteDTO.CPF) && c.PacienteId != pacienteDTO.PacienteId);
+            var existingPaciente = _pacienteRepository.Buscar(c => (c.CPF == pacienteDTO.CPF) && c.PacienteId != pacienteDTO.PacienteId);
 
             if (existingPaciente.Any())
                 throw new Exception("Documento já pertence a outro paciente");
@@ -129,5 +130,38 @@ namespace Service.Services
             return true;
         }
 
+        public IList<PacienteEnderecoDTO> GetTodosPacientesEnderecos()
+        {
+            IList<Paciente> pacientesEnderecos = _pacienteRepository.GetTodosPacientesEnderecos();
+
+            IList<PacienteEnderecoDTO> pacientesEnderecosDTO = pacientesEnderecos.Select(c => new PacienteEnderecoDTO
+            {
+                PacienteId = c.PacienteId,
+                Nome = c.Nome,
+                SobreNome = c.SobreNome,
+                DataDeNascimento = c.DataDeNascimento,
+                Genero = c.Genero,
+                CPF = c.CPF,
+                Celular = c.Celular,
+                Email = c.Email,
+                Profissao = c.Profissao,
+                PacienteEndereco = new PacienteEnderecoGetDTO
+                {
+                    EnderecoId = c.EnderecoId,
+                    Logradouro = c.Endereco.Logradouro,
+                    Complemento = c.Endereco.Complemento,
+                    Numero = c.Endereco.Numero,
+                    Cep = c.Endereco.Cep,
+                    Bairro = c.Endereco.Bairro,
+                    localidade = c.Endereco.localidade,
+                    UF = c.Endereco.UF
+                }
+
+            }).ToList();
+
+            return pacientesEnderecosDTO;
+        }
     }
+
 }
+
