@@ -14,6 +14,8 @@ namespace ApiLF.Configuration
             services.AddScoped<IEnderecoRepository, EnderecoRepository>();
             services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
             services.AddScoped<IProcedimentoRepository, ProcedimentoRepository>();
+            services.AddScoped<IProcedimentoAgendamentosRepository, ProcedimentoAgendamentosRepository>();
+            services.AddScoped<IAgendamentosPacientesRepository, AgendamentosPacientesRepository>();
 
             services.AddScoped<IAgendamentoService, AgendamentoService>();
             services.AddScoped<IPacienteService, PacienteService>();

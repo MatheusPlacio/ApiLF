@@ -1,35 +1,33 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
-namespace Domain.Models
+namespace Domain.DTOs.NewFolder
 {
-    public class Funcionario
+    public class ProcedimentoAgendamentoDTO
     {
-        public int FuncionarioId { get; set; }
+        public int ProcedimentoAgendamentoId { get; set; }
 
         //===========================================================================================================================//
+        public int ProcedimentoId { get; set; }
 
+        //===========================================================================================================================//
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        public string Nome { get; set; }
+        public string NomeProcedimento { get; set; }
 
         //===========================================================================================================================//
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        public string SobreNome { get; set; }
+        public int AgendamentoId { get; set; }
+        //===========================================================================================================================//
+
+        public DateTime DataHoraMarcada { get; set; }
 
         //===========================================================================================================================//
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        public int Idade { get; set; }
-
+        [StringLength(10, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
+        public int Sessoes { get; set; }
         //===========================================================================================================================//
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        public string Especialidade { get; set; }
 
-        //===========================================================================================================================//
-
-        //EF
-        public List<Agendamento> Agendamento { get; set; }
+        [StringLength(10, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
+        public string Observacao { get; set; }
     }
 }

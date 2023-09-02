@@ -1,7 +1,9 @@
 using ApiLF.Configuration;
 using Data.Context;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,16 +16,31 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDependencyInjectionConfiguration();
 
-var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logg", "app.log");
+var logDirectory = Path.Combine(AppContext.BaseDirectory, "Logg");
 
-var logger = new LoggerConfiguration()
+Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day)
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
+        .WriteTo.File(
+            path: Path.Combine(logDirectory, "information.log"),
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: null,
+            shared: true)
+    )
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error)
+        .WriteTo.File(
+            path: Path.Combine(logDirectory, "error.log"),
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: null,
+            shared: true)
+    )
     .CreateLogger();
 
 builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(logger);
+builder.Logging.AddSerilog();
 
 builder.Services.AddCors();
 
@@ -31,6 +48,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
+
+JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+{
+    Formatting = Newtonsoft.Json.Formatting.Indented,
+    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+};
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

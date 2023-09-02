@@ -4,6 +4,6 @@ namespace Domain.Interfaces.IRepository
 {
     public interface IAgendamentoRepository : IRepository<Agendamento>
     {
-
+        IList<ProcedimentoAgendamento> GetTodosAgendamentos();
     }
 }

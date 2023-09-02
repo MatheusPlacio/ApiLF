@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using Domain.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Models
+namespace Domain.DTOs.AgendamentosDTO
 {
-    public class Agendamento
+    public class AgendamentoDTO
     {
         public int AgendamentoId { get; set; }
         //===========================================================================================================================//
@@ -12,6 +12,7 @@ namespace Domain.Models
 
         //===========================================================================================================================//
 
+        [StringLength(10, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
         public int Sessoes { get; set; }
         //===========================================================================================================================//
 
@@ -19,14 +20,6 @@ namespace Domain.Models
         [StringLength(150, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
         public string Observacao { get; set; }
         //===========================================================================================================================//
-
-        //EF
-        public Funcionario Funcionario { get; set; }
-
-        public int FuncionarioId { get; set; }
-
-        public List<ProcedimentoAgendamento> ProcedimentoAgendamentos { get; set; }
-
-        public List<AgendamentosPacientes> AgendamentosPacientes { get; set; }
     }
 }
+

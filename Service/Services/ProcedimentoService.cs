@@ -1,5 +1,8 @@
-﻿using Domain.Interfaces.IRepository;
+﻿using Domain.DTOs.AgendamentosDTO;
+using Domain.DTOs.ProcedimentosDTO;
+using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
+using Domain.Models;
 
 namespace Service.Services
 {
@@ -12,6 +15,25 @@ namespace Service.Services
             _procedimentoRepository = procedimentoRepository;
         }
 
+        public IList<ProcedimentoDTO> ObterTodosProcedimentos()
+        {
+            IList<Procedimento> procedimentos = _procedimentoRepository.Get();
+
+            IList<ProcedimentoDTO> procedimentoDTO = procedimentos.Select(p => new ProcedimentoDTO
+            {
+                ProcedimentoId = p.ProcedimentoId,
+                NomeProcedimento = p.NomeProcedimento
+            }).ToList();
+
+            return procedimentoDTO;
+        }
+
+        public IList<Procedimento> ObterTodosProcedimentosAgendamentos()
+        {
+            var procedimentos = _procedimentoRepository.GetProcedimentosAgendamentos();
+
+            return procedimentos;
+        }
 
     }
 }

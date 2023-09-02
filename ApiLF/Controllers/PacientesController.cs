@@ -61,7 +61,7 @@ namespace ApiLF.Controllers
                 throw ex;
             }
 
-            return Ok(pacienteDTO);
+            return CreatedAtAction(nameof(CriarPaciente), new { id = pacienteDTO.PacienteId }, null);
         }
 
         [HttpPut]
@@ -100,4 +100,6 @@ namespace ApiLF.Controllers
             }
         }
     }
+
+
 }

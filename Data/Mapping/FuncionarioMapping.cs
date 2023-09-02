@@ -14,7 +14,7 @@ namespace ApiLF.Mapping
             builder.Property(x => x.Nome).IsRequired().HasMaxLength(20);
             builder.Property(x => x.SobreNome).IsRequired().HasMaxLength(50);
             builder.Property(x => x.Idade).IsRequired().HasMaxLength(2);
-            builder.Property(x => x.Especialidade).IsRequired().HasMaxLength(2);
+            builder.Property(x => x.Especialidade).IsRequired().HasMaxLength(20);
 
 
             //EF

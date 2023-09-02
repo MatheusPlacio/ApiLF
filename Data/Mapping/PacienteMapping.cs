@@ -17,6 +17,8 @@ namespace ApiLF.Mapping
 
             builder.Property(x => x.Genero).IsRequired().HasMaxLength(30); // Genero é obrigatório e pode conter no máximo 30 caracteres.
 
+            builder.Property(x => x.Idade).HasMaxLength(2); 
+
             builder.Property(x => x.DataDeNascimento)
                    .IsRequired()
                    .HasColumnType("date")

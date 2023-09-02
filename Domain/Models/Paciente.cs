@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
@@ -17,6 +18,10 @@ namespace Domain.Models
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [StringLength(100, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
         public string SobreNome { get; set; }
+
+        //===========================================================================================================================//
+
+        public int? Idade { get; set; }
 
         //===========================================================================================================================//
 
@@ -55,5 +60,8 @@ namespace Domain.Models
         //EF
         public Endereco Endereco { get; set; }
         public int EnderecoId { get; set; }
+
+
+        public List<AgendamentosPacientes> AgendamentosPacientes { get; set; }
     }
 }

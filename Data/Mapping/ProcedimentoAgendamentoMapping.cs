@@ -12,13 +12,9 @@ namespace Data.Mapping
 
             builder.Property(x => x.DataHoraMarcada).IsRequired();
 
-            builder.HasOne(x => x.Procedimento)
-                .WithMany(x => x.ProcedimentoAgendamentos)
-                .HasForeignKey(x => x.ProcedimentoId);
+            builder.HasOne(x => x.Procedimento).WithMany(x => x.ProcedimentoAgendamentos).HasForeignKey(x => x.ProcedimentoId);
 
-            builder.HasOne(x => x.Agendamento)
-                .WithMany(x => x.ProcedimentoAgendamentos)
-                .HasForeignKey(x => x.AgendamentoId);
+            builder.HasOne(x => x.Agendamento).WithMany(x => x.ProcedimentoAgendamentos).HasForeignKey(x => x.AgendamentoId);
         }
     }
 }

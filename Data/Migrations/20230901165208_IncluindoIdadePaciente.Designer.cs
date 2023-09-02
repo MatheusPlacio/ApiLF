@@ -4,6 +4,7 @@ using Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20230901165208_IncluindoIdadePaciente")]
+    partial class IncluindoIdadePaciente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,32 +53,6 @@ namespace Data.Migrations
                     b.HasIndex("FuncionarioId");
 
                     b.ToTable("Agendamentos");
-                });
-
-            modelBuilder.Entity("Domain.Models.AgendamentosPacientes", b =>
-                {
-                    b.Property<int>("AgendamentosPacientesId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgendamentosPacientesId"));
-
-                    b.Property<int>("AgendamentoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DataHoraMarcada")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PacienteId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AgendamentosPacientesId");
-
-                    b.HasIndex("AgendamentoId");
-
-                    b.HasIndex("PacienteId");
-
-                    b.ToTable("AgendamentosPacientes");
                 });
 
             modelBuilder.Entity("Domain.Models.Endereco", b =>
@@ -134,8 +111,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Especialidade")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
                     b.Property<int>("Idade")
                         .HasMaxLength(2)
@@ -335,25 +312,6 @@ namespace Data.Migrations
                     b.Navigation("Funcionario");
                 });
 
-            modelBuilder.Entity("Domain.Models.AgendamentosPacientes", b =>
-                {
-                    b.HasOne("Domain.Models.Agendamento", "Agendamento")
-                        .WithMany("AgendamentosPacientes")
-                        .HasForeignKey("AgendamentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Paciente", "Paciente")
-                        .WithMany("AgendamentosPacientes")
-                        .HasForeignKey("PacienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Agendamento");
-
-                    b.Navigation("Paciente");
-                });
-
             modelBuilder.Entity("Domain.Models.Paciente", b =>
                 {
                     b.HasOne("Domain.Models.Endereco", "Endereco")
@@ -386,8 +344,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Agendamento", b =>
                 {
-                    b.Navigation("AgendamentosPacientes");
-
                     b.Navigation("ProcedimentoAgendamentos");
                 });
 
@@ -399,11 +355,6 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.Models.Funcionario", b =>
                 {
                     b.Navigation("Agendamento");
-                });
-
-            modelBuilder.Entity("Domain.Models.Paciente", b =>
-                {
-                    b.Navigation("AgendamentosPacientes");
                 });
 
             modelBuilder.Entity("Domain.Models.Procedimento", b =>

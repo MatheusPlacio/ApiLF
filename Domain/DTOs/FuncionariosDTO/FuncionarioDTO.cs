@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
-namespace Domain.Models
+namespace Domain.DTOs.FuncionariosDTO
 {
-    public class Funcionario
+    public class FuncionarioDTO
     {
         public int FuncionarioId { get; set; }
 
@@ -28,8 +27,5 @@ namespace Domain.Models
         public string Especialidade { get; set; }
 
         //===========================================================================================================================//
-
-        //EF
-        public List<Agendamento> Agendamento { get; set; }
     }
 }
