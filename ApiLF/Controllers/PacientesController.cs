@@ -31,7 +31,7 @@ namespace ApiLF.Controllers
             return Ok(pacientes);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("BuscarPacienteId/{id}")]
         public IActionResult ObterPacientePorId(int id)
         {
             var paciente =  _pacienteService.ObterPacientePorId(id);
@@ -49,7 +49,7 @@ namespace ApiLF.Controllers
             return Ok(enderecos);
         }
 
-        [HttpPost]
+        [HttpPost("CriarPaciente")]
         public IActionResult CriarPaciente(PacienteRegisterDTO pacienteDTO)
         {
             try
@@ -64,7 +64,7 @@ namespace ApiLF.Controllers
             return CreatedAtAction(nameof(CriarPaciente), new { id = pacienteDTO.PacienteId }, null);
         }
 
-        [HttpPut]
+        [HttpPut("AtualizarPaciente")]
         public async Task<IActionResult> AtualizarPaciente(PacienteUpdateDTO pacienteDTO)
         {
             try
@@ -82,7 +82,7 @@ namespace ApiLF.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeletarPaciente/{id}")]
         public IActionResult DeletarPaciente(int id)
         {
             try
