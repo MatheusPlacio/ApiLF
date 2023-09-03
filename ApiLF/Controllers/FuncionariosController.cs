@@ -65,7 +65,7 @@ namespace ApiLF.Controllers
             {
                 var result = _funcionarioService.AtualizarFuncionario(funcionarioDTO);
                 if (!result)
-                    return BadRequest("Paciente não encontrado");
+                    return BadRequest("Funcionário não encontrado");
 
                 return Ok(funcionarioDTO);
             }
@@ -83,9 +83,9 @@ namespace ApiLF.Controllers
             {
                 var result = _funcionarioService.DeletarFuncionario(id);
                 if (!result)
-                    return NotFound("Paciente não encontrado");
+                    return NotFound("Funcionário não encontrado");
 
-                return Ok("Paciente excluído com sucesso");
+                return Ok("Funcionário excluído com sucesso");
             }
             catch (Exception ex)
             {

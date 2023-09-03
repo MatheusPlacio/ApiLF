@@ -15,13 +15,11 @@ namespace ApiLF.Mapping
             builder.Property(x => x.SobreNome).IsRequired().HasMaxLength(50);
             builder.Property(x => x.Idade).IsRequired().HasMaxLength(2);
 
-            builder.HasIndex(x => x.Celular).IsUnique();
             builder.Property(x => x.Celular).IsRequired().HasMaxLength(14); // Celular é obrigatório e pode conter no máximo 14 caracteres.
 
             builder.Property(x => x.CPF).IsRequired();
 
-            builder.HasIndex(x => x.CPF)
-                .IsUnique(); // Define o índice único para o CPF
+            builder.HasIndex(x => x.CPF);
 
             builder.Property(x => x.Email).HasMaxLength(70); // Email é opcional e pode conter até 70 caracteres
 

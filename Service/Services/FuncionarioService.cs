@@ -10,11 +10,15 @@ namespace Service.Services
     public class FuncionarioService : IFuncionarioService
     {
         private readonly IFuncionarioRepository _funcionarioRepository;
+        private readonly IPacienteRepository _pacienteRepository;
         private readonly IMapper _mapper;
-        public FuncionarioService(IFuncionarioRepository funcionarioRepository, IMapper mapper)
+        public FuncionarioService(IFuncionarioRepository funcionarioRepository,
+                                  IMapper mapper,
+                                  IPacienteRepository pacienteRepository)
         {
             _funcionarioRepository = funcionarioRepository;
             _mapper = mapper;
+            _pacienteRepository = pacienteRepository;
         }
 
         public IList<FuncionarioDTO> ObterTodosFuncionarios()
@@ -62,6 +66,9 @@ namespace Service.Services
         public void CriarFuncionario(Funcionario funcionario)
         {
             if (_funcionarioRepository.Buscar(c => c.CPF == funcionario.CPF).Any())
+                throw new Exception("Documento já cadastrado no sistema");
+
+            if (_pacienteRepository.Buscar(c => c.CPF == funcionario.CPF).Any())
                 throw new Exception("Documento já cadastrado no sistema");
 
             else if (_funcionarioRepository.Buscar(c => c.Celular == funcionario.Celular).Any())
