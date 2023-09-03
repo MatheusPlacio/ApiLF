@@ -13,6 +13,7 @@ namespace Data.Context
         public DbSet<Paciente> Pacientes { get; set; }
         public DbSet<Procedimento> Procedimentos { get; set; }
         public DbSet<ProcedimentoAgendamento> ProcedimentosAgendamentos { get; set; }
+        public DbSet<AgendamentosPacientes> AgendamentosPacientes { get; set; }
 
         public MyContext(DbContextOptions<MyContext> options) : base(options)
         { }
@@ -27,6 +28,7 @@ namespace Data.Context
             modelBuilder.ApplyConfiguration(new PacienteMapping());
             modelBuilder.ApplyConfiguration(new ProcedimentoMapping());
             modelBuilder.ApplyConfiguration(new ProcedimentoAgendamentoMapping());
+            modelBuilder.ApplyConfiguration(new AgendamentosPacientesMapping());
         }
     }
 }

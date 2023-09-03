@@ -16,6 +16,11 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDependencyInjectionConfiguration();
 
+//builder.Services.AddControllers(options =>
+//{
+//    options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
+//});
+
 var logDirectory = Path.Combine(AppContext.BaseDirectory, "Logg");
 
 Log.Logger = new LoggerConfiguration()
@@ -58,6 +63,8 @@ JsonConvert.DefaultSettings = () => new JsonSerializerSettings
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 var app = builder.Build();
 

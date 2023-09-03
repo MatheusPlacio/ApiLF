@@ -1,8 +1,14 @@
-﻿using Domain.DTOs.AgendamentosDTO;
+﻿using Amazon.Lambda.Model;
+using Domain.DTOs.AgendamentosDTO;
 using Domain.Interfaces.IService;
+using Domain.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using OpenQA.Selenium;
 using Service.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiLF.Controllers
 {
@@ -58,6 +64,26 @@ namespace ApiLF.Controllers
             }
         }
 
+        [HttpPatch("RemarcarAgendamento/{id}")]
+        public IActionResult AtualizarAgendamento(int id, [FromBody] JsonPatchDocument<Agendamento> patchDocument)
+        {
+            try
+            {
+                bool sucesso = _agendamentoService.AtualizarAgendamento(id, patchDocument);
+
+                if (!sucesso)
+                {
+                    return NotFound("Agendamento não encontrado.");
+                }
+
+                return Ok("Agendamento atualizado com sucesso.");
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, $"Erro no servidor: {ex.Message}");
+            }
+        }
+
         [HttpDelete("RemoverAgendamento/{id}")]
         public IActionResult DeletarEndereco(int id)
         {
@@ -67,6 +93,22 @@ namespace ApiLF.Controllers
                 return BadRequest("Agendamento não encontrado");
 
             return Ok("Agendamento excluído com sucesso");
+        }
+
+        private IActionResult HandleException(Exception ex)
+        {
+            if (ex is NotFoundException)
+            {
+                return NotFound(ex.Message);
+            }
+            else if (ex is ValidationException)
+            {
+                return BadRequest(ex.Message);
+            }
+            else
+            {
+                return StatusCode(500, $"Erro no servidor: {ex.Message}");
+            }
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using Domain.DTOs.AgendamentosDTO;
+﻿using Amazon.Lambda.Model;
+using Domain.DTOs.AgendamentosDTO;
 using Domain.DTOs.FuncionariosDTO;
 using Domain.DTOs.NewFolder;
 using Domain.DTOs.PacientesDTO;
@@ -6,8 +7,11 @@ using Domain.DTOs.ProcedimentosDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OpenQA.Selenium;
 using Serilog;
 using Serilog.Core;
 
@@ -21,6 +25,7 @@ namespace Service.Services
         private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IProcedimentoAgendamentosRepository _procedimentoAgendamentosRepository;
         private readonly IAgendamentosPacientesRepository _agendamentosPacientesRepository;
+        private readonly IAgendamentosPacientesService _agendamentosPacientesService;
         private readonly ILogger<AgendamentoService> _logger;
 
         public AgendamentoService(IAgendamentoRepository agendamentoRepository,
@@ -29,6 +34,7 @@ namespace Service.Services
                                  IFuncionarioRepository funcionarioRepository,
                                  IProcedimentoAgendamentosRepository procedimentoAgendamentosRepository,
                                  IAgendamentosPacientesRepository agendamentosPacientesRepository,
+                                 IAgendamentosPacientesService agendamentosPacientesService,
                                  ILogger<AgendamentoService> logger)
         {
             _agendamentoRepository = agendamentoRepository;
@@ -37,6 +43,7 @@ namespace Service.Services
             _funcionarioRepository = funcionarioRepository;
             _procedimentoAgendamentosRepository = procedimentoAgendamentosRepository;
             _agendamentosPacientesRepository = agendamentosPacientesRepository;
+            _agendamentosPacientesService = agendamentosPacientesService;
             _logger = logger;
         }
 
@@ -132,7 +139,7 @@ namespace Service.Services
 
         public Agendamento CriarAgendamento(AgendamentoFuncionProcedimentosRegisterDTO agendamentoDTO)
         {
-            
+
             var procedimentoExistente = _procedimentoRepository.GetById(agendamentoDTO.ProcedimentoId);
             var pacienteExistente = _pacienteRepository.GetById(agendamentoDTO.PacienteId);
             var funcionarioExistente = _funcionarioRepository.GetById(agendamentoDTO.FuncionarioId);
@@ -196,6 +203,31 @@ namespace Service.Services
 
         }
 
+        public bool AtualizarAgendamento(int id, JsonPatchDocument<Agendamento> patchDocument)
+        {
+            Agendamento? agendamento = _agendamentoRepository.GetTodosAgendamentosById(id);
+
+            try
+            {
+                if (agendamento == null)
+                    return false;
+
+                // Aplica as modificações contidas no JsonPatchDocument
+                patchDocument.ApplyTo(agendamento);
+
+                _agendamentoRepository.Update(agendamento);
+
+                // Atualize a DataHoraMarcada nas tabelas AgendamentosPacientes e ProcedimentoAgendamentos
+                _agendamentosPacientesRepository.UpdateDataHoraMarcada(id, agendamento.DataHoraMarcada);
+                _procedimentoAgendamentosRepository.UpdateDataHoraMarcada(id, agendamento.DataHoraMarcada);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException("Falha ao atualizar o agendamento.", ex);
+            }
+        }
 
         public bool DeletarAgendamento(int id)
         {
@@ -208,5 +240,8 @@ namespace Service.Services
             return true;
         }
 
-    }
+    } 
 }
+
+  
+

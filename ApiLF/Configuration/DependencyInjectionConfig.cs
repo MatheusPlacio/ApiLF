@@ -22,6 +22,8 @@ namespace ApiLF.Configuration
             services.AddScoped<IEnderecoService, EnderecoService>();
             services.AddScoped<IFuncionarioService, FuncionarioService>();
             services.AddScoped<IProcedimentoService, ProcedimentoService>();
+            services.AddScoped<IAgendamentosPacientesService, AgendamentosPacientesService>();
+            services.AddScoped<IProcedimentoAgendamentoService, ProcedimentoAgendamentoService>();
         }
     }
 }
