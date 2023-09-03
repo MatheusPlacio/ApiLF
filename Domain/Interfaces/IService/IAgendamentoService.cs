@@ -5,8 +5,9 @@ namespace Domain.Interfaces.IService
 {
     public interface IAgendamentoService
     {
-        IList<AgendamentoDTO> ObterAgendamentos();
         IList<AgendamentoFuncionProcedimentosDTO> ObterTodosAgendamentosFuncionariosProcedimentos();
+        AgendamentoFuncionProcedimentosDTO? ObterTodosAgendamentosFuncionariosProcedimentosPorId(int id);
         Agendamento CriarAgendamento(AgendamentoFuncionProcedimentosRegisterDTO agendamentoDTO);
+        bool DeletarAgendamento(int id);
     }
 }

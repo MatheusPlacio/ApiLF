@@ -40,56 +40,41 @@ namespace Service.Services
             _logger = logger;
         }
 
-        public IList<AgendamentoDTO> ObterAgendamentos()
-        {
-            IList<Agendamento> agendamentos = _agendamentoRepository.Get();
-            IList<AgendamentoDTO> agendamentosDTO = agendamentos.Select(p => new AgendamentoDTO
-            {
-                AgendamentoId = p.AgendamentoId,
-                DataHoraMarcada = p.DataHoraMarcada,
-                Sessoes = p.Sessoes,
-                Observacao = p.Observacao
-            }).ToList();
-
-            return agendamentosDTO;
-        }
-
         public IList<AgendamentoFuncionProcedimentosDTO> ObterTodosAgendamentosFuncionariosProcedimentos()
         {
-            IList<ProcedimentoAgendamento> procedimentoAgendamentos = _agendamentoRepository.GetTodosAgendamentos();
-            var dataDeNascimento = procedimentoAgendamentos.FirstOrDefault()?.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.DataDeNascimento;
+            IList<Agendamento> procedimentoAgendamentos = _agendamentoRepository.GetTodosAgendamentos();
 
             var agendamentoFuncionProcedimentosDTO = procedimentoAgendamentos.Select(p => new AgendamentoFuncionProcedimentosDTO
             {
                 ProcedimentoAgendamento = new ProcedimentoAgendamentoDTO
                 {
-                    ProcedimentoAgendamentoId = p.ProcedimentoAgendamentoId,
-                    ProcedimentoId = p.ProcedimentoId,
-                    NomeProcedimento = p.Procedimento.NomeProcedimento,
+                    ProcedimentoAgendamentoId = p.ProcedimentoAgendamentos.FirstOrDefault().ProcedimentoAgendamentoId,
+                    ProcedimentoId = p.ProcedimentoAgendamentos.FirstOrDefault().ProcedimentoId,
+                    NomeProcedimento = p.ProcedimentoAgendamentos.FirstOrDefault().Procedimento.NomeProcedimento,
                     AgendamentoId = p.AgendamentoId,
-                    DataHoraMarcada = p.Agendamento.DataHoraMarcada,
-                    Sessoes = p.Agendamento.Sessoes,
-                    Observacao = p.Agendamento.Observacao,
+                    DataHoraMarcada = p.DataHoraMarcada,
+                    Sessoes = p.Sessoes,
+                    Observacao = p.Observacao,
                 },
                 Paciente = new PacienteDTO
                 {
-                    PacienteId = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.PacienteId ?? 0,
-                    Nome = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Nome ?? "Nome não informado",
-                    SobreNome = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.SobreNome ?? "SobreNome não informado",
-                    DataDeNascimento = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.DataDeNascimento.ToString("dd/MM/yyyy") ?? "Data de Nascimento não informada",
-                    Genero = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Genero ?? "Genero não informado",
-                    CPF = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.CPF ?? "CPF não informado",
-                    Celular = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Celular ?? "Celular não informado",
-                    Email = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Email ?? "Email não informado",
-                    Profissao = p.Agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Profissao ?? "Profissão não informado",
+                    PacienteId = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.PacienteId ?? 0,
+                    Nome = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Nome ?? "Nome não informado",
+                    SobreNome = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.SobreNome ?? "SobreNome não informado",
+                    DataDeNascimento = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.DataDeNascimento.ToString("dd/MM/yyyy") ?? "Data de Nascimento não informada",
+                    Genero = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Genero ?? "Genero não informado",
+                    CPF = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.CPF ?? "CPF não informado",
+                    Celular = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Celular ?? "Celular não informado",
+                    Email = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Email ?? "Email não informado",
+                    Profissao = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Profissao ?? "Profissão não informado",
                 },
                 Funcionario = new FuncionarioDTO
                 {
-                    FuncionarioId = p.Agendamento.Funcionario.FuncionarioId,
-                    Nome = p.Agendamento.Funcionario.Nome,
-                    SobreNome = p.Agendamento.Funcionario.SobreNome,
-                    Idade = p.Agendamento.Funcionario.Idade,
-                    Especialidade = p.Agendamento.Funcionario.Especialidade
+                    FuncionarioId = p.Funcionario.FuncionarioId,
+                    Nome = p.Funcionario.Nome,
+                    SobreNome = p.Funcionario.SobreNome,
+                    Idade = p.Funcionario.Idade,
+                    Especialidade = p.Funcionario.Especialidade
                 },
             }).ToList();
 
@@ -98,19 +83,81 @@ namespace Service.Services
             return agendamentoFuncionProcedimentosDTO;
         }
 
+        public AgendamentoFuncionProcedimentosDTO? ObterTodosAgendamentosFuncionariosProcedimentosPorId(int id)
+        {
+            Agendamento? agendamento = _agendamentoRepository.GetTodosAgendamentosById(id);
+
+            if (agendamento == null)
+                return null;
+
+            var agendamentoFuncionProcedimentosDTO = new AgendamentoFuncionProcedimentosDTO
+            {
+                ProcedimentoAgendamento = new ProcedimentoAgendamentoDTO
+                {
+                    ProcedimentoAgendamentoId = agendamento.ProcedimentoAgendamentos.FirstOrDefault().ProcedimentoAgendamentoId,
+                    ProcedimentoId = agendamento.ProcedimentoAgendamentos.FirstOrDefault().ProcedimentoId,
+                    NomeProcedimento = agendamento.ProcedimentoAgendamentos.FirstOrDefault().Procedimento.NomeProcedimento,
+                    AgendamentoId = agendamento.AgendamentoId,
+                    DataHoraMarcada = agendamento.DataHoraMarcada,
+                    Sessoes = agendamento.Sessoes,
+                    Observacao = agendamento.Observacao,
+                },
+                Paciente = new PacienteDTO
+                {
+                    PacienteId = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.PacienteId ?? 0,
+                    Nome = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Nome ?? "Nome não informado",
+                    SobreNome = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.SobreNome ?? "SobreNome não informado",
+                    DataDeNascimento = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.DataDeNascimento.ToString("dd/MM/yyyy") ?? "Data de Nascimento não informada",
+                    Genero = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Genero ?? "Genero não informado",
+                    CPF = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.CPF ?? "CPF não informado",
+                    Celular = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Celular ?? "Celular não informado",
+                    Email = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Email ?? "Email não informado",
+                    Profissao = agendamento.AgendamentosPacientes.FirstOrDefault()?.Paciente.Profissao ?? "Profissão não informado",
+                },
+                Funcionario = new FuncionarioDTO
+                {
+                    FuncionarioId = agendamento.Funcionario.FuncionarioId,
+                    Nome = agendamento.Funcionario.Nome,
+                    SobreNome = agendamento.Funcionario.SobreNome,
+                    Idade = agendamento.Funcionario.Idade,
+                    Especialidade = agendamento.Funcionario.Especialidade
+                },
+            };
+
+            _logger.LogInformation($"Informações do agendamentoFuncionProcedimentosDTO: {JsonConvert.SerializeObject(agendamentoFuncionProcedimentosDTO)}");
+
+            return agendamentoFuncionProcedimentosDTO;
+        }
+
+
         public Agendamento CriarAgendamento(AgendamentoFuncionProcedimentosRegisterDTO agendamentoDTO)
         {
-            // Verifique se o procedimento, paciente e funcionário existem no banco
+            
             var procedimentoExistente = _procedimentoRepository.GetById(agendamentoDTO.ProcedimentoId);
             var pacienteExistente = _pacienteRepository.GetById(agendamentoDTO.PacienteId);
             var funcionarioExistente = _funcionarioRepository.GetById(agendamentoDTO.FuncionarioId);
 
+            // Verifique se o procedimento, paciente e funcionário existem no banco
             if (procedimentoExistente == null || pacienteExistente == null || funcionarioExistente == null)
                 return null;
 
+            var dataHoraMarcada = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.DataHoraMarcada;
+
+            // Arredonde os minutos para o próximo intervalo de meia hora
+            var minutos = dataHoraMarcada.Minute;
+            var minutosArredondados = (minutos / 30) * 30;
+            dataHoraMarcada = new DateTime(dataHoraMarcada.Year, dataHoraMarcada.Month, dataHoraMarcada.Day, dataHoraMarcada.Hour, minutosArredondados, 0);
+
+            // Verifique se já existe um agendamento para o mesmo funcionário no mesmo horário
+            while (_agendamentoRepository.Buscar(c => c.DataHoraMarcada == dataHoraMarcada && c.FuncionarioId == agendamentoDTO.FuncionarioId).Any())
+            {
+                // Se o horário estiver ocupado, ajuste para o próximo intervalo de meia hora
+                dataHoraMarcada = dataHoraMarcada.AddMinutes(30);
+            }
+
             var novoAgendamento = new Agendamento
             {
-                DataHoraMarcada = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.DataHoraMarcada,
+                DataHoraMarcada = dataHoraMarcada,
                 Sessoes = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.Sessoes,
                 Observacao = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.Observacao,
                 Funcionario = funcionarioExistente,
@@ -120,23 +167,46 @@ namespace Service.Services
             {
                 Paciente = pacienteExistente,
                 Agendamento = novoAgendamento,
-                DataHoraMarcada = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.DataHoraMarcada,
+                DataHoraMarcada = dataHoraMarcada,
             };
 
             var novoProcedimentosAgendamentos = new ProcedimentoAgendamento
             {
                 Procedimento = procedimentoExistente,
                 Agendamento = novoAgendamento,
-                DataHoraMarcada = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.DataHoraMarcada,
+                DataHoraMarcada = dataHoraMarcada,
             };
 
-            _agendamentoRepository.Add(novoAgendamento);
-            _agendamentosPacientesRepository.Add(novoAgendamentosPacientes);
-            _procedimentoAgendamentosRepository.Add(novoProcedimentosAgendamentos);
+            try
+            {
+                _agendamentoRepository.Add(novoAgendamento);
+                _agendamentosPacientesRepository.Add(novoAgendamentosPacientes);
+                _procedimentoAgendamentosRepository.Add(novoProcedimentosAgendamentos);
 
-            return novoAgendamento;
+                _logger.LogInformation($"Agendamento criado: {novoAgendamento}");
+
+                return novoAgendamento;
+            }
+
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Erro ao criar o agendamento: {ex.Message}");
+            }
+
         }
 
+
+        public bool DeletarAgendamento(int id)
+        {
+            var resultado = _agendamentoRepository.GetTodosAgendamentosById(id);
+
+            if (resultado == null)
+                return false;
+
+            _agendamentoRepository.Delete(resultado);
+            return true;
+        }
 
     }
 }

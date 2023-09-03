@@ -6,25 +6,36 @@ using Microsoft.EntityFrameworkCore;
 namespace Data.Repository
 {
     public class AgendamentoRepository : Repository<Agendamento>, IAgendamentoRepository
-    {
+    { 
         private readonly MyContext _context;
         public AgendamentoRepository(MyContext context) : base(context)
         {
             _context = context;
         }
 
-        public IList<ProcedimentoAgendamento> GetTodosAgendamentos()
+        public IList<Agendamento> GetTodosAgendamentos()
         {
-            var procedimentoAgendamento = _context.ProcedimentosAgendamentos.Include(x => x.Agendamento)
-                                                                            .Include(x => x.Procedimento)
-                                                                            .Include(x => x.Agendamento.ProcedimentoAgendamentos)
-                                                                            .Include(x => x.Agendamento.AgendamentosPacientes)
-                                                                            .Include(x => x.Agendamento.Funcionario)
-                                                                            .Include(x => x.Agendamento.AgendamentosPacientes)
-                                                                            .ThenInclude(x => x.Paciente)
-                                                                            .ToList();
+            var agendamento = _context.Agendamentos.Include(x => x.ProcedimentoAgendamentos)
+                                                     .ThenInclude(x => x.Procedimento)
+                                                     .Include(x => x.AgendamentosPacientes)
+                                                     .ThenInclude(x => x.Paciente)
+                                                     .Include(x => x.Funcionario)
+                                                     .ToList();
 
-            return procedimentoAgendamento;
+            return agendamento;
         }
+
+        public Agendamento GetTodosAgendamentosById(int id)
+        {
+           var agendamentoId = _context.Agendamentos.Include(x => x.ProcedimentoAgendamentos)
+                                                    .ThenInclude(x => x.Procedimento)
+                                                    .Include(x => x.AgendamentosPacientes)
+                                                    .ThenInclude(x => x.Paciente)
+                                                    .Include(x => x.Funcionario)
+                                                    .FirstOrDefault(x => x.AgendamentoId == id);
+
+            return agendamentoId;
+        }
+
     }
 }

@@ -110,6 +110,7 @@ namespace Service.Services
                 localidade = endereco?.localidade ?? "Localidade não encontrada",
                 UF = endereco?.UF ?? "UF não encontrada"
             };
+
             return enderecosDTO;
         }
 
