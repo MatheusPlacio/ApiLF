@@ -78,9 +78,9 @@ namespace ApiLF.Controllers
 
                 return Ok("Agendamento atualizado com sucesso.");
             }
-            catch (ServiceException ex)
+            catch (Exception ex)
             {
-                return StatusCode(500, $"Erro no servidor: {ex.Message}");
+                return HandleException(ex);
             }
         }
 

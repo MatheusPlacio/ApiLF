@@ -6,6 +6,6 @@ namespace Domain.Interfaces.IService
     public interface IProcedimentoService
     {
         IList<ProcedimentoDTO> ObterTodosProcedimentos();
-        IList<Procedimento> ObterTodosProcedimentosAgendamentos();
+        ProcedimentoDTO ObterProcedimentosPorId(int id);
     }
 }

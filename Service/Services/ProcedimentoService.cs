@@ -28,11 +28,17 @@ namespace Service.Services
             return procedimentoDTO;
         }
 
-        public IList<Procedimento> ObterTodosProcedimentosAgendamentos()
+        public ProcedimentoDTO ObterProcedimentosPorId(int id)
         {
-            var procedimentos = _procedimentoRepository.GetProcedimentosAgendamentos();
+            var procedimentos = _procedimentoRepository.GetById(id);
 
-            return procedimentos;
+            ProcedimentoDTO procedimentoDTO = new ProcedimentoDTO
+            {
+                ProcedimentoId = procedimentos.ProcedimentoId,
+                NomeProcedimento = procedimentos.NomeProcedimento
+            };
+
+            return procedimentoDTO;
         }
 
     }
