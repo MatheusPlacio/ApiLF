@@ -139,7 +139,6 @@ namespace Service.Services
 
         public Agendamento CriarAgendamento(AgendamentoFuncionProcedimentosRegisterDTO agendamentoDTO)
         {
-
             var procedimentoExistente = _procedimentoRepository.GetById(agendamentoDTO.ProcedimentoId);
             var pacienteExistente = _pacienteRepository.GetById(agendamentoDTO.PacienteId);
             var funcionarioExistente = _funcionarioRepository.GetById(agendamentoDTO.FuncionarioId);
