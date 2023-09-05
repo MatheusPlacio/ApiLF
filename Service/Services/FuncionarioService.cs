@@ -1,9 +1,12 @@
-﻿using AutoMapper;
+﻿using Amazon.Lambda.Model;
+using AutoMapper;
 using Domain.DTOs.FuncionariosDTO;
 using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Microsoft.AspNetCore.JsonPatch;
+using System.ComponentModel.DataAnnotations;
 
 namespace Service.Services
 {
@@ -45,7 +48,7 @@ namespace Service.Services
             Funcionario? resultado = _funcionarioRepository.GetById(id);
 
             if (resultado == null)
-                throw new Exception("Funcionário não encontrado");
+                return null;
 
             FuncionarioDTO funcionarioDTO = new FuncionarioDTO
             {
@@ -93,9 +96,10 @@ namespace Service.Services
                 Funcionario? funcionarioDb = _funcionarioRepository.GetById(funcionarioDTO.FuncionarioId);
 
                 if (funcionarioDb == null)
-                {
-                    throw new Exception("Funcionário não encontrado");
-                }
+                    return false;
+
+                if (_funcionarioRepository.Buscar(c => (c.CPF == funcionarioDTO.CPF) && c.FuncionarioId != funcionarioDTO.FuncionarioId).Any())
+                    throw new ValidationException("Documento já cadastrado no sistema.");
 
                 _mapper.Map(funcionarioDTO, funcionarioDb);
 
@@ -104,11 +108,49 @@ namespace Service.Services
                 return true;
             }
 
+            catch (ValidationException ex)
+            {
+                throw ex;
+            }
+
             catch (Exception ex)
             {
-                throw new Exception($"{ex}");
+                throw new ServiceException("Falha ao atualizar o funcionário.", ex);
             }
         }
+
+        public bool AtualizarFuncionarioParcial(int id, JsonPatchDocument<Funcionario> patchDocument)
+        {
+            Funcionario? funcionarioId = _funcionarioRepository.GetById(id);
+
+            if (funcionarioId == null)
+                return false;
+
+            try
+            {
+                if (_funcionarioRepository.Buscar(c => (c.CPF == patchDocument.Operations.FirstOrDefault().value) && c.FuncionarioId != id).Any())
+                    throw new ValidationException("Documento já cadastrado no sistema.");
+
+                if (_pacienteRepository.Buscar(c => c.CPF == patchDocument.Operations.FirstOrDefault().value).Any())
+                    throw new ValidationException("Documento já cadastrado no sistema.");
+
+                // Aplica as modificações contidas no JsonPatchDocument
+                patchDocument.ApplyTo(funcionarioId);
+
+                _funcionarioRepository.Update(funcionarioId);
+
+                return true;
+            }
+            catch (ValidationException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException("Falha ao atualizar o funcionário.", ex);
+            }
+        }
+
 
         public bool DeletarFuncionario(int funcionarioId)
         {

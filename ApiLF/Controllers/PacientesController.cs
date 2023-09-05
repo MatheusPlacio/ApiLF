@@ -1,9 +1,12 @@
-﻿using AutoMapper;
+﻿using Amazon.Lambda.Model;
+using AutoMapper;
 using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiLF.Controllers
 {
@@ -71,7 +74,7 @@ namespace ApiLF.Controllers
             {
                 var result = _pacienteService.AtualizarPaciente(pacienteDTO);
                 if (!result)
-                    return BadRequest("Paciente não encontrado");
+                    return NotFound("Paciente não encontrado");
 
                 return Ok(pacienteDTO);
             }
@@ -79,6 +82,32 @@ namespace ApiLF.Controllers
             {
 
                 throw ex;
+            }
+        }
+
+        [HttpPatch("AtualizarFuncionarioParcial/{id}")]
+        public IActionResult AtualizarFuncionarioParcial(int id, [FromBody] JsonPatchDocument<Paciente> patchDocument)
+        {
+            try
+            {
+                bool sucesso = _pacienteService.AtualizarPacienteParcial(id, patchDocument);
+
+                if (!sucesso)
+                {
+                    return NotFound("Paciente não encontrado.");
+                }
+
+                return Ok("Paciente atualizado com sucesso.");
+            }
+
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, $"Erro no servidor: {ex.Message}");
             }
         }
 
@@ -95,8 +124,7 @@ namespace ApiLF.Controllers
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                return BadRequest("Erro ao excluir paciente");
             }
         }
     }

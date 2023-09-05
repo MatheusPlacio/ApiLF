@@ -1,10 +1,14 @@
-﻿using AutoMapper;
+﻿using Amazon.Lambda.Model;
+using AutoMapper;
 using Domain.DTOs.FuncionariosDTO;
 using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using OpenQA.Selenium;
 using Service.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiLF.Controllers
 {
@@ -38,10 +42,11 @@ namespace ApiLF.Controllers
             var funcionario = _funcionarioService.ObterFuncionarioPorId(id);
             if (funcionario == null)
             {
-                return NotFound();
+                return NotFound("Funcionário não encontrado");
             }
             return Ok(funcionario);
         }
+
 
         [HttpPost("CriarFuncionario")]
         public IActionResult CriarFuncionario(FuncionarioDTO funcionarioDTO)
@@ -69,12 +74,44 @@ namespace ApiLF.Controllers
 
                 return Ok(funcionarioDTO);
             }
+
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
             catch (Exception ex)
             {
-
-                throw ex;
+                return StatusCode(500, $"Erro no servidor: {ex.Message}");
             }
         }
+
+        [HttpPatch("AtualizarFuncionarioParcial/{id}")]
+        public IActionResult AtualizarFuncionarioParcial(int id, [FromBody] JsonPatchDocument<Funcionario> patchDocument)
+        {
+            try
+            {
+                bool sucesso = _funcionarioService.AtualizarFuncionarioParcial(id, patchDocument);
+
+                if (!sucesso)
+                {
+                    return NotFound("Funcionário não encontrado.");
+                }
+
+                return Ok("Funcionário atualizado com sucesso.");
+            }
+
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, $"Erro no servidor: {ex.Message}");
+            }
+        }
+
 
         [HttpDelete("DeletarFuncionario/{id}")]
         public IActionResult DeletarPaciente(int id)
@@ -93,6 +130,7 @@ namespace ApiLF.Controllers
                 throw ex;
             }
         }
+
     }
 }
 

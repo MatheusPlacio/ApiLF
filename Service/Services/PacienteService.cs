@@ -1,20 +1,25 @@
-﻿using AutoMapper;
+﻿using Amazon.Lambda.Model;
+using AutoMapper;
 using Domain.DTOs.EnderecoDTO;
 using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Microsoft.AspNetCore.JsonPatch;
+using System.ComponentModel.DataAnnotations;
 
 namespace Service.Services
 {
     public class PacienteService : IPacienteService
     {
         private readonly IPacienteRepository _pacienteRepository;
+        private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IMapper _mapper;
 
-        public PacienteService(IPacienteRepository pacienteRepository, IMapper mapper)
+        public PacienteService(IPacienteRepository pacienteRepository, IMapper mapper, IFuncionarioRepository funcionarioRepository)
         {
             _pacienteRepository = pacienteRepository;
+            _funcionarioRepository = funcionarioRepository;
             _mapper = mapper;
         }
 
@@ -85,7 +90,7 @@ namespace Service.Services
             var existingPaciente = _pacienteRepository.Buscar(c => (c.CPF == pacienteDTO.CPF) && c.PacienteId != pacienteDTO.PacienteId);
 
             if (existingPaciente.Any())
-                throw new Exception("Documento já pertence a outro paciente");
+                return false;
 
             try
             {
@@ -109,14 +114,44 @@ namespace Service.Services
             }
         }
 
+        public bool AtualizarPacienteParcial(int id, JsonPatchDocument<Paciente> patchDocument)
+        {
+            Paciente? pacienteId = _pacienteRepository.GetById(id);
+
+            if (pacienteId == null)
+                return false;
+
+            try
+            {
+                if (_pacienteRepository.Buscar(c => (c.CPF == patchDocument.Operations.FirstOrDefault().value) && c.PacienteId != id).Any())
+                    throw new ValidationException("Documento já cadastrado no sistema.");
+
+                if (_funcionarioRepository.Buscar(c => c.CPF == patchDocument.Operations.FirstOrDefault().value).Any())
+                    throw new ValidationException("Documento já cadastrado no sistema.");
+
+                // Aplica as modificações contidas no JsonPatchDocument
+                patchDocument.ApplyTo(pacienteId);
+
+                _pacienteRepository.Update(pacienteId);
+
+                return true;
+            }
+            catch (ValidationException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException("Falha ao atualizar o paciente.", ex);
+            }
+        }
+
         public bool DeletarPaciente(int pacienteId)
         {
             var paciente = _pacienteRepository.GetById(pacienteId);
 
             if (paciente == null)
-            {
                 return false;
-            }
 
             try
             {
